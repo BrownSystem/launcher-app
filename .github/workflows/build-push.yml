@@ -11,14 +11,21 @@ jobs:
 
     strategy:
       matrix:
-        service:
-          - client-gateway
-          - frontend
-          - microservices/auth-ms
-          # - microservices/branches-ms
-          # - microservices/contacts-ms
-          # - microservices/products-ms
-          # - microservices/voucher-ms
+        include:
+          - name: client-gateway
+            path: client-gateway
+          - name: frontend
+            path: frontend
+          - name: auth-ms
+            path: microservices/auth-ms
+          # - name: branches-ms
+          #   path: microservices/branches-ms
+          # - name: contacts-ms
+          #   path: microservices/contacts-ms
+          # - name: products-ms
+          #   path: microservices/products-ms
+          # - name: voucher-ms
+          #   path: microservices/voucher-ms
 
     steps:
       - name: Checkout launcher repo with submodules
@@ -38,14 +45,15 @@ jobs:
 
       - name: Print current service
         run: |
-          echo "Building and pushing: ${{ matrix.service }}"
+          echo "🔧 Building and pushing image for: ${{ matrix.name }}"
+          echo "📁 Using context path: ${{ matrix.path }}"
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: ${{ matrix.service }}
-          file: ${{ matrix.service }}/dockerfile.prod
+          context: ./${{ matrix.path }}
+          file: ./${{ matrix.path }}/dockerfile.prod
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.name }}:${{ github.sha }}
