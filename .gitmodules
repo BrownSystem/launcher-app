@@ -1,0 +1,21 @@
+[submodule "microservices/products-ms"]
+	path = microservices/products-ms
+	url = https://github.com/BrownSystem/products-ms.git
+[submodule "microservices/contacts-ms"]
+	path = microservices/contacts-ms
+	url = https://github.com/BrownSystem/contacts-ms.git
+[submodule "microservices/branches-ms"]
+	path = microservices/branches-ms
+	url = https://github.com/BrownSystem/branches-ms.git
+[submodule "microservices/voucher-ms"]
+	path = microservices/voucher-ms
+	url = https://github.com/BrownSystem/voucher-ms.git
+[submodule "client-gateway"]
+	path = client-gateway
+	url = https://github.com/BrownSystem/client-gateway.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/BrownSystem/frontend.git
+[submodule "microservices/auth-ms"]
+	path = microservices/auth-ms
+	url = https://github.com/BrownSystem/auth-ms.git
