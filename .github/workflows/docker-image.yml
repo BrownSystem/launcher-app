@@ -1,16 +1,8 @@
-name: Build and Push Docker Images
+name: Build and Push Microservices
 
 on:
   push:
-    branches: [main]
-    paths:
-      - "client-gateway/**"
-      - "frontend/**"
-      - "microservices/auth-ms/**"
-      - "microservices/branches-ms/**"
-      - "microservices/contacts-ms/**"
-      - "microservices/products-ms/**"
-      - "microservices/voucher-ms/**"
+    branches: [main] # Se ejecuta al pushear en main
 
 jobs:
   build-and-push:
@@ -43,7 +35,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Check if service changed
+      - name: Check if submodule changed
         id: check_changes
         run: |
           if git diff --name-only HEAD^ HEAD | grep ${{ matrix.service }}; then
@@ -52,11 +44,12 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build and push image
+      - name: Build and Push Docker Image
         if: steps.check_changes.outputs.changed == 'true'
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.service }}
+          file: ${{ matrix.service }}/dockerfile.prod
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
