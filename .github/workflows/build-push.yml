@@ -37,7 +37,9 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Print current service
-      run: echo "Checking service: ${{ matrix.service }}"
+      env:
+        SERVICE: ${{ matrix.service }}
+      run: echo "Checking service: $SERVICE"
 
     - name: Check if submodule changed
       id: check_changes
