@@ -1,0 +1,166 @@
+services:
+  nats-servers:
+    image: nats:latest
+    networks:
+      - laucher-app
+    restart: always
+
+  client-gateway:
+    image: client-gateway
+    build:
+      context: ./client-gateway
+      dockerfile: dockerfile.prod
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://nats-servers:4222
+    depends_on:
+      - nats-servers
+    restart: unless-stopped
+    networks:
+      - laucher-app
+
+  auth-db:
+    image: postgres:15-alpine
+    environment:
+      # - POSTGRES_USER=${POSTGRES_USER_AUTH_ENV}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_AUTH_ENV}
+      - POSTGRES_DB=${POSTGRES_DB_AUTH_ENV}
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - laucher-app
+
+  auth-ms:
+    image: auth-ms
+    build:
+      context: ./microservices/auth-ms
+      dockerfile: dockerfile.prod
+    environment:
+      - PORT=3004
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_AUTH_ENV}@auth-db:5432/${POSTGRES_DB_AUTH_ENV}?schema=public&sslmode=disable
+      - NATS_SERVERS=nats://nats-servers:4222
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - auth-db
+    restart: always
+    networks:
+      - laucher-app
+
+  product-db:
+    image: postgres:15-alpine
+    environment:
+      # - POSTGRES_USER=${POSTGRES_USER_PRODUCTS_ENV}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PRODUCTS_ENV}
+      - POSTGRES_DB=${POSTGRES_DB_PRODUCTS_ENV}
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - laucher-app
+
+  products-ms:
+    image: products-ms
+    build:
+      context: ./microservices/products-ms
+      dockerfile: dockerfile.prod
+    environment:
+      - PORT=3001
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_PRODUCTS_ENV}@product-db:5432/${POSTGRES_DB_PRODUCTS_ENV}?schema=public&sslmode=disable
+      - NATS_SERVERS=nats://nats-servers:4222
+    depends_on:
+      - product-db
+    restart: unless-stopped
+    networks:
+      - laucher-app
+
+  contacts-db:
+    image: postgres:15-alpine
+    environment:
+      # - POSTGRES_USER=${POSTGRES_USER_CONTACTS_ENV}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_CONTACTS_ENV}
+      - POSTGRES_DB=${POSTGRES_DB_CONTACTS_ENV}
+    volumes:
+      - contacts-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - laucher-app
+
+  contacts-ms:
+    image: contacts-ms
+    build:
+      context: ./microservices/contacts-ms
+      dockerfile: dockerfile.prod
+    environment:
+      - PORT=3005
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_CONTACTS_ENV}@contacts-db:5432/${POSTGRES_DB_CONTACTS_ENV}?schema=public&sslmode=disable
+      - NATS_SERVERS=nats://nats-servers:4222
+    depends_on:
+      - contacts-db
+    restart: unless-stopped
+    networks:
+      - laucher-app
+
+  branches-db:
+    image: postgres:15-alpine
+    environment:
+      # - POSTGRES_USER=${POSTGRES_USER_BRANCHES_ENV}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BRANCHES_ENV}
+      - POSTGRES_DB=${POSTGRES_DB_BRANCHES_ENV}
+    volumes:
+      - branches-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - laucher-app
+
+  branches-ms:
+    image: branches-ms
+    build:
+      context: ./microservices/branches-ms
+      dockerfile: dockerfile.prod
+    environment:
+      - PORT=3003
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_BRANCHES_ENV}@branches-db:5432/${POSTGRES_DB_BRANCHES_ENV}?schema=public&sslmode=disable
+      - NATS_SERVERS=nats://nats-servers:4222
+    depends_on:
+      - branches-db
+    restart: unless-stopped
+    networks:
+      - laucher-app
+
+  voucher-db:
+    image: postgres:15-alpine
+    environment:
+      # - POSTGRES_USER=${POSTGRES_USER_VOUCHER_ENV}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_VOUCHER_ENV}
+      - POSTGRES_DB=${POSTGRES_DB_VOUCHER_ENV}
+    volumes:
+      - voucher-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - laucher-app
+
+  frontend:
+    image: frontend
+    build:
+      context: ./frontend
+      dockerfile: dockerfile.prod
+    ports:
+      - "4173:4173" # o 3006:80 si usás otro puerto
+    networks:
+      - laucher-app
+    depends_on:
+      - client-gateway
+
+networks:
+  laucher-app:
+    driver: bridge
+
+volumes:
+  auth-db-data:
+  product-db-data:
+  contacts-db-data:
+  branches-db-data:
+  voucher-db-data:
