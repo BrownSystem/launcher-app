@@ -28,7 +28,7 @@ jobs:
           - microservices/voucher-ms
 
     steps:
-      - name: Checkout main repo with submodules
+      - name: Checkout launcher repo with submodules
         uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -43,9 +43,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Check if service changed
+        id: check_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep ${{ matrix.service }}; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push image
+        if: steps.check_changes.outputs.changed == 'true'
         uses: docker/build-push-action@v5
         with:
           context: ${{ matrix.service }}
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
