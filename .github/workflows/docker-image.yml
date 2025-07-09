@@ -2,6 +2,7 @@ name: Build and Push Docker Images
 
 on:
   push:
+    branches: [main]
     paths:
       - "client-gateway/**"
       - "frontend/**"
@@ -10,8 +11,6 @@ on:
       - "microservices/contacts-ms/**"
       - "microservices/products-ms/**"
       - "microservices/voucher-ms/**"
-    branches:
-      - main # o master, según tu repositorio
 
 jobs:
   build-and-push:
