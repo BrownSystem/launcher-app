@@ -15,10 +15,10 @@ jobs:
           - client-gateway
           - frontend
           - microservices/auth-ms
-          - microservices/branches-ms
-          - microservices/contacts-ms
-          - microservices/products-ms
-          - microservices/voucher-ms
+          # - microservices/branches-ms
+          # - microservices/contacts-ms
+          # - microservices/products-ms
+          # - microservices/voucher-ms
 
     steps:
       - name: Checkout launcher repo with submodules
