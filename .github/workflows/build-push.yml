@@ -21,12 +21,12 @@ jobs:
             path: microservices/auth-ms
           - name: branches-ms
             path: microservices/branches-ms
-          - name: contacts-ms
-            path: microservices/contacts-ms
-          - name: products-ms
-            path: microservices/products-ms
-          - name: voucher-ms
-            path: microservices/voucher-ms
+          # - name: contacts-ms
+          #   path: microservices/contacts-ms
+          # - name: products-ms
+          #   path: microservices/products-ms
+          # - name: voucher-ms
+          #   path: microservices/voucher-ms
 
     steps:
       - name: Checkout launcher repo with submodules
