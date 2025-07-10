@@ -38,5 +38,4 @@ jobs:
             cd /root/bosque
             docker compose -f docker-compose.prod.yml config || { echo "❌ Compose config failed"; exit 1; }
             docker compose -f docker-compose.prod.yml up -d || { echo "❌ Compose up failed"; exit 1; }
-            docker compose ps
           EOF
