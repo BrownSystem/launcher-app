@@ -23,3 +23,5 @@
 ```
 
 6 - Tener en cuenta que si se quiere usar el comando de arriba, se debe actualizar los puertos para la conexion de DB en cada MS.
+
+7. PROBANDO CAMBIOS
