@@ -1,4 +1,4 @@
-name: Deploy to Cloud Server
+name: Deploy to Cloud Server with SSH
 
 on:
   push:
