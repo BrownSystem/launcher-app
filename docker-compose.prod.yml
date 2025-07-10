@@ -1,15 +1,14 @@
+version: "3.8"
+
 services:
   nats-servers:
     image: nats:latest
+    restart: always
     networks:
       - laucher-app
-    restart: always
 
   client-gateway:
-    image: client-gateway
-    build:
-      context: ./client-gateway
-      dockerfile: dockerfile.prod
+    image: noinblake/client-gateway:v1
     ports:
       - "4000:4000"
     environment:
@@ -24,7 +23,6 @@ services:
   auth-db:
     image: postgres:15-alpine
     environment:
-      # - POSTGRES_USER=${POSTGRES_USER_AUTH_ENV}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_AUTH_ENV}
       - POSTGRES_DB=${POSTGRES_DB_AUTH_ENV}
     volumes:
@@ -34,10 +32,7 @@ services:
       - laucher-app
 
   auth-ms:
-    image: auth-ms
-    build:
-      context: ./microservices/auth-ms
-      dockerfile: dockerfile.prod
+    image: noinblake/auth-ms:v1
     environment:
       - PORT=3004
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_AUTH_ENV}@auth-db:5432/${POSTGRES_DB_AUTH_ENV}?schema=public&sslmode=disable
@@ -52,7 +47,6 @@ services:
   product-db:
     image: postgres:15-alpine
     environment:
-      # - POSTGRES_USER=${POSTGRES_USER_PRODUCTS_ENV}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PRODUCTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_PRODUCTS_ENV}
     volumes:
@@ -62,10 +56,7 @@ services:
       - laucher-app
 
   products-ms:
-    image: products-ms
-    build:
-      context: ./microservices/products-ms
-      dockerfile: dockerfile.prod
+    image: noinblake/products-ms:v1
     environment:
       - PORT=3001
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_PRODUCTS_ENV}@product-db:5432/${POSTGRES_DB_PRODUCTS_ENV}?schema=public&sslmode=disable
@@ -79,7 +70,6 @@ services:
   contacts-db:
     image: postgres:15-alpine
     environment:
-      # - POSTGRES_USER=${POSTGRES_USER_CONTACTS_ENV}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_CONTACTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_CONTACTS_ENV}
     volumes:
@@ -89,10 +79,7 @@ services:
       - laucher-app
 
   contacts-ms:
-    image: contacts-ms
-    build:
-      context: ./microservices/contacts-ms
-      dockerfile: dockerfile.prod
+    image: noinblake/contacts-ms:v1
     environment:
       - PORT=3005
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_CONTACTS_ENV}@contacts-db:5432/${POSTGRES_DB_CONTACTS_ENV}?schema=public&sslmode=disable
@@ -106,7 +93,6 @@ services:
   branches-db:
     image: postgres:15-alpine
     environment:
-      # - POSTGRES_USER=${POSTGRES_USER_BRANCHES_ENV}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BRANCHES_ENV}
       - POSTGRES_DB=${POSTGRES_DB_BRANCHES_ENV}
     volumes:
@@ -116,10 +102,7 @@ services:
       - laucher-app
 
   branches-ms:
-    image: branches-ms
-    build:
-      context: ./microservices/branches-ms
-      dockerfile: dockerfile.prod
+    image: noinblake/branches-ms:v1
     environment:
       - PORT=3003
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_BRANCHES_ENV}@branches-db:5432/${POSTGRES_DB_BRANCHES_ENV}?schema=public&sslmode=disable
@@ -133,7 +116,6 @@ services:
   voucher-db:
     image: postgres:15-alpine
     environment:
-      # - POSTGRES_USER=${POSTGRES_USER_VOUCHER_ENV}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_VOUCHER_ENV}
       - POSTGRES_DB=${POSTGRES_DB_VOUCHER_ENV}
     volumes:
@@ -143,16 +125,14 @@ services:
       - laucher-app
 
   frontend:
-    image: frontend
-    build:
-      context: ./frontend
-      dockerfile: dockerfile.prod
+    image: noinblake/frontend:v1
     ports:
-      - "4173:4173" # o 3006:80 si usás otro puerto
-    networks:
-      - laucher-app
+      - "5173:5173"
     depends_on:
       - client-gateway
+    restart: unless-stopped
+    networks:
+      - laucher-app
 
 networks:
   laucher-app:

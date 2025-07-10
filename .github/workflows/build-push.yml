@@ -1,60 +1,38 @@
-name: Force Build and Push All Microservices
+name: Deploy to Cloud Server
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches:
+      - main
+    paths:
+      - docker-compose.prod.yml
+      - .env
 
 jobs:
-  build-and-push-all:
+  deploy:
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: client-gateway
-            path: client-gateway
-          - name: frontend
-            path: frontend
-          - name: auth-ms
-            path: microservices/auth-ms
-          - name: branches-ms
-            path: microservices/branches-ms
-          # - name: contacts-ms
-          #   path: microservices/contacts-ms
-          # - name: products-ms
-          #   path: microservices/products-ms
-          # - name: voucher-ms
-          #   path: microservices/voucher-ms
-
     steps:
-      - name: Checkout launcher repo with submodules
+      - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          submodules: recursive
-          fetch-depth: 0
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Print current service
+      - name: Add server to known_hosts
         run: |
-          echo "🔧 Building and pushing image for: ${{ matrix.name }}"
-          echo "📁 Using context path: ${{ matrix.path }}"
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./${{ matrix.path }}
-          file: ./${{ matrix.path }}/dockerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.name }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.name }}:${{ github.sha }}
+      - name: Create remote folder & upload files
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /root/bosque"
+          scp -P ${{ secrets.SERVER_PORT }} docker-compose.prod.yml .env ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/bosque/
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            cd /root/bosque
+            docker compose -f docker-compose.prod.yml up -d
+          EOF
