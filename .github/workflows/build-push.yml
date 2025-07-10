@@ -3,9 +3,7 @@ name: Deploy to Cloud Server
 on:
   push:
     branches: [main]
-    paths:
-      - docker-compose.prod.yml
-      - .env
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -29,9 +27,17 @@ jobs:
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /root/bosque"
           scp -P ${{ secrets.SERVER_PORT }} docker-compose.prod.yml .env ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/bosque/
 
+      - name: Login to Docker Hub on server
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          EOF
+
       - name: Deploy with Docker Compose
         run: |
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /root/bosque
+            docker compose -f docker-compose.prod.yml config && echo "✅ Config OK"
             docker compose -f docker-compose.prod.yml up -d
+            docker compose ps
           EOF
