@@ -19,8 +19,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add server to known_hosts
-        run: |
-          ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Create remote folder & upload files
         run: |
@@ -37,7 +36,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /root/bosque
-            docker compose -f docker-compose.prod.yml config && echo "✅ Config OK"
-            docker compose -f docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml config || { echo "❌ Compose config failed"; exit 1; }
+            docker compose -f docker-compose.prod.yml up -d || { echo "❌ Compose up failed"; exit 1; }
             docker compose ps
           EOF
