@@ -1,8 +1,10 @@
 services:
   nats-servers:
     image: nats:latest
+    ports:
+      - "4222:4222"
     networks:
-      - laucher-app
+      - laucher-app-dev
     restart: always
 
   client-gateway:
@@ -19,7 +21,7 @@ services:
       - nats-servers
     restart: unless-stopped
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   auth-db:
     image: postgres:15-alpine
@@ -28,10 +30,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_AUTH_ENV}
       - POSTGRES_DB=${POSTGRES_DB_AUTH_ENV}
     volumes:
-      - auth-db-data:/var/lib/postgresql/data
+      - auth-db-data-dev:/var/lib/postgresql/data
     restart: always
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   auth-ms:
     image: auth-ms
@@ -47,7 +49,7 @@ services:
       - auth-db
     restart: always
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   product-db:
     image: postgres:15-alpine
@@ -56,10 +58,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PRODUCTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_PRODUCTS_ENV}
     volumes:
-      - product-db-data:/var/lib/postgresql/data
+      - product-db-data-dev:/var/lib/postgresql/data
     restart: always
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   products-ms:
     image: products-ms
@@ -74,7 +76,7 @@ services:
       - product-db
     restart: unless-stopped
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   contacts-db:
     image: postgres:15-alpine
@@ -83,10 +85,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_CONTACTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_CONTACTS_ENV}
     volumes:
-      - contacts-db-data:/var/lib/postgresql/data
+      - contacts-db-data-dev:/var/lib/postgresql/data
     restart: always
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   contacts-ms:
     image: contacts-ms
@@ -101,7 +103,7 @@ services:
       - contacts-db
     restart: unless-stopped
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   branches-db:
     image: postgres:15-alpine
@@ -110,10 +112,10 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BRANCHES_ENV}
       - POSTGRES_DB=${POSTGRES_DB_BRANCHES_ENV}
     volumes:
-      - branches-db-data:/var/lib/postgresql/data
+      - branches-db-data-dev:/var/lib/postgresql/data
     restart: always
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   branches-ms:
     image: branches-ms
@@ -128,19 +130,36 @@ services:
       - branches-db
     restart: unless-stopped
     networks:
-      - laucher-app
+      - laucher-app-dev
 
   voucher-db:
     image: postgres:15-alpine
+    ports:
+      - "5432:5432"
     environment:
       # - POSTGRES_USER=${POSTGRES_USER_VOUCHER_ENV}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_VOUCHER_ENV}
       - POSTGRES_DB=${POSTGRES_DB_VOUCHER_ENV}
     volumes:
-      - voucher-db-data:/var/lib/postgresql/data
+      - voucher-db-data-dev:/var/lib/postgresql/data
     restart: always
     networks:
-      - laucher-app
+      - laucher-app-dev
+
+  voucher-ms:
+    image: voucher-ms
+    build:
+      context: ./microservices/voucher-ms
+      dockerfile: dockerfile.prod
+    environment:
+      - PORT=3006
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_VOUCHER_ENV}@voucher-db:5432/${POSTGRES_DB_VOUCHER_ENV}?schema=public&sslmode=disable
+      - NATS_SERVERS=nats://nats-servers:4222
+    depends_on:
+      - voucher-db
+    restart: unless-stopped
+    networks:
+      - laucher-app-dev
 
   frontend:
     image: frontend
@@ -150,17 +169,17 @@ services:
     ports:
       - "4173:4173" # o 3006:80 si usás otro puerto
     networks:
-      - laucher-app
+      - laucher-app-dev
     depends_on:
       - client-gateway
 
 networks:
-  laucher-app:
+  laucher-app-dev:
     driver: bridge
 
 volumes:
-  auth-db-data:
-  product-db-data:
-  contacts-db-data:
-  branches-db-data:
-  voucher-db-data:
+  auth-db-data-dev:
+  product-db-data-dev:
+  contacts-db-data-dev:
+  branches-db-data-dev:
+  voucher-db-data-dev:

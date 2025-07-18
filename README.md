@@ -25,3 +25,9 @@
 6 - Tener en cuenta que si se quiere usar el comando de arriba, se debe actualizar los puertos para la conexion de DB en cada MS.
 
 7. PROBANDO CAMBIOS
+
+[HACER BUILD DE DOCKER NUEVO Y SUBIR A DOVKER HUB]
+
+frontend []
+client-gateway []
+auth-ms []

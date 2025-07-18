@@ -122,15 +122,15 @@ services:
     networks:
       - laucher-app
 
-  # frontend:
-  #   image: noinblake/frontend:v1
-  #   ports:
-  #     - "5173:5173"
-  #   depends_on:
-  #     - client-gateway
-  #   restart: unless-stopped
-  #   networks:
-  #     - laucher-app
+  frontend:
+    image: noinblake/frontend:v1
+    ports:
+      - "5173:5173"
+    depends_on:
+      - client-gateway
+    restart: unless-stopped
+    networks:
+      - laucher-app
 
 networks:
   laucher-app:
