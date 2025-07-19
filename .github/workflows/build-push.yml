@@ -37,5 +37,4 @@ jobs:
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd /root/bosque
             docker compose -f docker-compose.prod.yml up -d --pull always || { echo "❌ Compose pull failed"; exit 1; }
-            docker compose -f docker-compose.prod.yml up -d || { echo "❌ Compose up failed"; exit 1; }
           EOF
