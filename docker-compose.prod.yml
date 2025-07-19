@@ -122,6 +122,18 @@ services:
     networks:
       - laucher-app
 
+  voucher-ms:
+    image: noinblake/voucher-ms:v1
+    environment:
+      - PORT=3002
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_VOUCHER_ENV}@voucher-db:5432/${POSTGRES_DB_VOUCHER_ENV}?schema=public&sslmode=disable
+      - NATS_SERVERS=nats://nats-servers:4222
+    depends_on:
+      - voucher-db
+    restart: unless-stopped
+    networks:
+      - laucher-app
+
   frontend:
     image: noinblake/frontend:v1
     ports:
