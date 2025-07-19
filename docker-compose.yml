@@ -167,7 +167,7 @@ services:
       context: ./frontend
       dockerfile: dockerfile.prod
     ports:
-      - "4173:4173" # o 3006:80 si usás otro puerto
+      - "5173:5173" # o 3006:80 si usás otro puerto
     networks:
       - laucher-app-dev
     depends_on:
