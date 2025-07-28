@@ -144,6 +144,16 @@ services:
     networks:
       - laucher-app
 
+  app-mobile:
+    image: noinblake/app-mobile:v1
+    ports:
+      - "5174:5174"
+    depends_on:
+      - client-gateway
+    restart: unless-stopped
+    networks:
+      - laucher-app
+
 networks:
   laucher-app:
     driver: bridge
