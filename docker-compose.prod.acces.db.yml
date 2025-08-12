@@ -20,6 +20,8 @@ services:
 
   auth-db:
     image: postgres:15-alpine
+    ports:
+      - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_AUTH_ENV}
       - POSTGRES_DB=${POSTGRES_DB_AUTH_ENV}
@@ -47,6 +49,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PRODUCTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_PRODUCTS_ENV}
+    ports:
+      - "5434:5432"
     volumes:
       - product-db-data:/var/lib/postgresql/data
     restart: always
@@ -70,6 +74,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_CONTACTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_CONTACTS_ENV}
+    ports:
+      - "5435:5432"
     volumes:
       - contacts-db-data:/var/lib/postgresql/data
     restart: always
@@ -93,6 +99,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BRANCHES_ENV}
       - POSTGRES_DB=${POSTGRES_DB_BRANCHES_ENV}
+    ports:
+      - "5436:5432"
     volumes:
       - branches-db-data:/var/lib/postgresql/data
     restart: always
@@ -116,6 +124,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_VOUCHER_ENV}
       - POSTGRES_DB=${POSTGRES_DB_VOUCHER_ENV}
+    ports:
+      - "5437:5432"
     volumes:
       - voucher-db-data:/var/lib/postgresql/data
     restart: always
