@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   nats-servers:
     image: nats:latest
@@ -170,7 +172,36 @@ networks:
 
 volumes:
   auth-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker.backup/volumes.bak/bosque_auth-db-data/_data
+      o: bind
+
   product-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker.backup/volumes.bak/bosque_product-db-data/_data
+      o: bind
+
   contacts-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker.backup/volumes.bak/bosque_contacts-db-data/_data
+      o: bind
+
   branches-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker.backup/volumes.bak/bosque_branches-db-data/_data
+      o: bind
+
   voucher-db-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/docker.backup/volumes.bak/bosque_voucher-db-data/_data
+      o: bind
