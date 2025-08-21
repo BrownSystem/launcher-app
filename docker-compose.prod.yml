@@ -99,8 +99,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BRANCHES_ENV}
       - POSTGRES_DB=${POSTGRES_DB_BRANCHES_ENV}
-    # ports:
-    #   - "5436:5432"
+    ports:
+      - "5436:5432"
     volumes:
       - branches-db-data:/var/lib/postgresql/data
     restart: always
@@ -124,8 +124,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_VOUCHER_ENV}
       - POSTGRES_DB=${POSTGRES_DB_VOUCHER_ENV}
-    ports:
-      - "5437:5432"
+    # ports:
+    #   - "5437:5432"
     volumes:
       - voucher-db-data:/var/lib/postgresql/data
     restart: always
