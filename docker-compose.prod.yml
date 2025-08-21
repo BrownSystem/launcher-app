@@ -7,8 +7,8 @@ services:
 
   client-gateway:
     image: noinblake/client-gateway:v1
-    # ports:
-    #   - "4000:4000"
+    ports:
+      - "4000:4000"
     environment:
       - PORT=4000
       - NATS_SERVERS=nats://nats-servers:4222
