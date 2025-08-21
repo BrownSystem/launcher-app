@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   nats-servers:
     image: nats:latest
@@ -48,11 +46,11 @@ services:
 
   product-db:
     image: postgres:15-alpine
-    ports:
-      - "5434:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PRODUCTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_PRODUCTS_ENV}
+    ports:
+      - "5434:5432"
     volumes:
       - product-db-data:/var/lib/postgresql/data
     restart: always
@@ -73,11 +71,11 @@ services:
 
   contacts-db:
     image: postgres:15-alpine
-    ports:
-      - "5435:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_CONTACTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_CONTACTS_ENV}
+    ports:
+      - "5435:5432"
     volumes:
       - contacts-db-data:/var/lib/postgresql/data
     restart: always
@@ -98,11 +96,11 @@ services:
 
   branches-db:
     image: postgres:15-alpine
-    ports:
-      - "5436:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BRANCHES_ENV}
       - POSTGRES_DB=${POSTGRES_DB_BRANCHES_ENV}
+    ports:
+      - "5436:5432"
     volumes:
       - branches-db-data:/var/lib/postgresql/data
     restart: always
@@ -123,11 +121,11 @@ services:
 
   voucher-db:
     image: postgres:15-alpine
-    ports:
-      - "5437:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_VOUCHER_ENV}
       - POSTGRES_DB=${POSTGRES_DB_VOUCHER_ENV}
+    ports:
+      - "5437:5432"
     volumes:
       - voucher-db-data:/var/lib/postgresql/data
     restart: always
@@ -172,36 +170,7 @@ networks:
 
 volumes:
   auth-db-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/lib/docker.backup/volumes.bak/bosque_auth-db-data/_data
-      o: bind
-
   product-db-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/lib/docker.backup/volumes.bak/bosque_product-db-data/_data
-      o: bind
-
   contacts-db-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/lib/docker.backup/volumes.bak/bosque_contacts-db-data/_data
-      o: bind
-
   branches-db-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/lib/docker.backup/volumes.bak/bosque_branches-db-data/_data
-      o: bind
-
   voucher-db-data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/lib/docker.backup/volumes.bak/bosque_voucher-db-data/_data
-      o: bind
