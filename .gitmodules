@@ -19,3 +19,6 @@
 [submodule "microservices/auth-ms"]
 	path = microservices/auth-ms
 	url = https://github.com/BrownSystem/auth-ms.git
+[submodule "app-mobile"]
+	path = app-mobile
+	url = https://github.com/BrownSystem/App-Mobile.git
