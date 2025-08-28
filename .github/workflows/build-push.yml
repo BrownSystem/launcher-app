@@ -1,4 +1,4 @@
-name: Deploy to Cloud Server with SSH
+name: Build, Push & Deploy
 
 on:
   push:
@@ -6,12 +6,42 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          [
+            auth-ms,
+            branches-ms,
+            contacts-ms,
+            products-ms,
+            voucher-ms,
+            client-gateway,
+            frontend,
+            app-mobile,
+          ]
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          submodules: recursive # 👈 muy importante para traer microservices
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push ${{ matrix.service }}
+        uses: docker/build-push-action@v4
+        with:
+          context: ${{matrix.service == 'app-mobile' && './app-mobile' || matrix.service == 'frontend' && './frontend' || matrix.service == 'client-gateway' && './client-gateway' || format('./microservices/{0}', matrix.service) }}
+          file: ${{matrix.service == 'app-mobile' && './app-mobile/dockerfile.prod' || matrix.service == 'frontend' && './frontend/dockerfile.prod' || matrix.service == 'client-gateway' && './client-gateway/dockerfile.prod' || format('./microservices/{0}/dockerfile.prod', matrix.service) }}
+          push: true
+          tags: |
+            noinblake/${{ matrix.service }}:v1
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
@@ -21,7 +51,7 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Create remote folder & upload files
+      - name: Upload docker-compose and env
         run: |
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /root/bosque"
           scp -P ${{ secrets.SERVER_PORT }} docker-compose.prod.yml .env ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/bosque/
