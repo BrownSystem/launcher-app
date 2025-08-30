@@ -164,15 +164,15 @@ services:
     networks:
       - laucher-app-dev
 
-  app-mobile:
-    image: app-mobile
-    build:
-      context: G:\BrownSystem\bosque-fr
-      dockerfile: dockerfile.prod
-    ports:
-      - "5174:5174"
-    networks:
-      - laucher-app-dev
+  # app-mobile:
+  #   image: app-mobile
+  #   build:
+  #     context: G:\BrownSystem\bosque-fr
+  #     dockerfile: dockerfile.prod
+  #   ports:
+  #     - "5174:5174"
+  #   networks:
+  #     - laucher-app-dev
 
   frontend:
     image: frontend
