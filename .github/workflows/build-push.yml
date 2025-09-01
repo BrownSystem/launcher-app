@@ -29,8 +29,14 @@ jobs:
             path: microservices/voucher-ms
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repo with submodules
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Ensure submodules are up to date
+        run: git submodule update --init --recursive
 
       - name: Validate Dockerfile
         run: |
@@ -59,8 +65,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repo with submodules
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Ensure submodules are up to date
+        run: git submodule update --init --recursive
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
