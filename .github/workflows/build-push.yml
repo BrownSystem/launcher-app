@@ -27,6 +27,7 @@ jobs:
             path: microservices/products-ms
           - name: voucher-ms
             path: microservices/voucher-ms
+      max-parallel: 8
 
     steps:
       - name: Checkout repo with submodules
@@ -34,9 +35,6 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-
-      - name: Ensure submodules are up to date
-        run: git submodule update --init --recursive
 
       - name: Validate Dockerfile
         run: |
@@ -57,6 +55,7 @@ jobs:
           context: ./${{ matrix.service.path }}
           file: ./${{ matrix.service.path }}/dockerfile.prod
           push: true
+          no-cache: true
           tags: |
             noinblake/${{ matrix.service.name }}:v1
 
@@ -71,9 +70,6 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Ensure submodules are up to date
-        run: git submodule update --init --recursive
-
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -82,7 +78,7 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Create remote folder & upload files
+      - name: Upload config files
         run: |
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /root/bosque"
           scp -P ${{ secrets.SERVER_PORT }} docker-compose.prod.yml .env ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/root/bosque/
@@ -99,4 +95,10 @@ jobs:
             cd /root/bosque
             docker compose -f docker-compose.prod.yml pull || { echo "❌ Compose pull failed"; exit 1; }
             docker compose -f docker-compose.prod.yml up -d || { echo "❌ Compose up failed"; exit 1; }
+          EOF
+
+      - name: Cleanup unused Docker data on server
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+            docker system prune -af --volumes
           EOF
