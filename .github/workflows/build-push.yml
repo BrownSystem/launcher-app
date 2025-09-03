@@ -90,14 +90,13 @@ jobs:
       - name: Login to Docker Hub on server
         run: |
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << EOF
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           EOF
 
       - name: Deploy with Docker Compose
         run: |
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-          cd /root/bosque
-          docker compose -f docker-compose.prod.yml pull || { echo "❌ Compose pull failed"; exit 1; }
-          docker compose -f docker-compose.prod.yml up -d || { echo "❌ Compose up failed"; exit 1; }
+            cd /root/bosque
+            docker compose -f docker-compose.prod.yml pull || { echo "❌ Compose pull failed"; exit 1; }
+            docker compose -f docker-compose.prod.yml up -d || { echo "❌ Compose up failed"; exit 1; }
           EOF
-          echo "✅ Deployment completed successfully"

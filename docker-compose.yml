@@ -174,17 +174,17 @@ services:
   #   networks:
   #     - laucher-app-dev
 
-  # frontend:
-  #   image: frontend
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: dockerfile.prod
-  #   ports:
-  #     - "5173:5173" # o 3006:80 si usás otro puerto
-  #   networks:
-  #     - laucher-app-dev
-  #   depends_on:
-  #     - client-gateway
+  frontend:
+    image: frontend
+    build:
+      context: ./frontend
+      dockerfile: dockerfile.prod
+    ports:
+      - "5173:5173" # o 3006:80 si usás otro puerto
+    networks:
+      - laucher-app-dev
+    depends_on:
+      - client-gateway
 
 networks:
   laucher-app-dev:
