@@ -49,8 +49,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_PRODUCTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_PRODUCTS_ENV}
-    # ports:
-    #   - "5434:5432"
+    ports:
+      - "5434:5432"
     volumes:
       - product-db-data:/var/lib/postgresql/data
     restart: always
@@ -144,15 +144,15 @@ services:
     networks:
       - laucher-app
 
-  # frontend:
-  #   image: noinblake/frontend:v1
-  #   ports:
-  #     - "5173:5173"
-  #   depends_on:
-  #     - client-gateway
-  #   restart: unless-stopped
-  #   networks:
-  #     - laucher-app
+  frontend:
+    image: noinblake/frontend:v1
+    ports:
+      - "5173:5173"
+    depends_on:
+      - client-gateway
+    restart: unless-stopped
+    networks:
+      - laucher-app
 
   app-mobile:
     image: noinblake/app-mobile:v1
