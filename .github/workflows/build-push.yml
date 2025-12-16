@@ -27,6 +27,9 @@ jobs:
             path: microservices/products-ms
           - name: voucher-ms
             path: microservices/voucher-ms
+
+          - name: boxdaily-ms
+            path: microservices/boxdaily-ms
       max-parallel: 8
 
     steps:

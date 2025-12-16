@@ -31,6 +31,31 @@ services:
     networks:
       - laucher-app
 
+  boxdaily-db:
+    image: postgres:15-alpine
+    # ports:
+    #   - "5442:5432"
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BOXDAILY_ENV}
+      - POSTGRES_DB=${POSTGRES_DB_BOXDAILY_ENV}
+    volumes:
+      - boxdaily-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - laucher-app-dev
+
+  boxdaily-ms:
+    image: noinblake/boxdaily-ms:v1
+    environment:
+      - PORT=3007
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_BOXDAILY_ENV}@boxdaily-db:5432/${POSTGRES_DB_BOXDAILY_ENV}?schema=public&sslmode=disable
+      - NATS_SERVERS=nats://nats-servers:4222
+    depends_on:
+      - boxdaily-db
+    restart: always
+    networks:
+      - laucher-app
+
   auth-ms:
     image: noinblake/auth-ms:v1
     environment:
@@ -170,6 +195,7 @@ networks:
 
 volumes:
   auth-db-data:
+  boxdaily-db-data:
   product-db-data:
   contacts-db-data:
   branches-db-data:
