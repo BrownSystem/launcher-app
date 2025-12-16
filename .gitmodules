@@ -1,6 +1,3 @@
-[submodule "microservices/boxdaily-ms"]
-	path = microservices/boxdaily-ms
-	url = https://github.com/BrownSystem/boxdaily-ms.git
 [submodule "microservices/products-ms"]
 	path = microservices/products-ms
 	url = https://github.com/BrownSystem/products-ms.git
