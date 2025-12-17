@@ -42,7 +42,7 @@ services:
       - boxdaily-db-data:/var/lib/postgresql/data
     restart: always
     networks:
-      - laucher-app-dev
+      - laucher-app
 
   boxdaily-ms:
     image: noinblake/boxdaily-ms:v1
