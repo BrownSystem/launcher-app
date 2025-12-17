@@ -22,3 +22,6 @@
 [submodule "app-mobile"]
 	path = app-mobile
 	url = https://github.com/BrownSystem/App-Mobile.git
+[submodule "microservices/boxdaily-ms"]
+	path = microservices/boxdaily-ms
+	url = https://github.com/BrownSystem/boxdaily-ms.git
