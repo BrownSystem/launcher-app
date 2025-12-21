@@ -7,21 +7,21 @@ services:
       - laucher-app-dev
     restart: always
 
-  client-gateway:
-    image: client-gateway
-    build:
-      context: ./client-gateway
-      dockerfile: dockerfile.prod
-    ports:
-      - "4000:4000"
-    environment:
-      - PORT=4000
-      - NATS_SERVERS=nats://nats-servers:4222
-    depends_on:
-      - nats-servers
-    restart: unless-stopped
-    networks:
-      - laucher-app-dev
+  # client-gateway:
+  #   image: client-gateway
+  #   build:
+  #     context: ./client-gateway
+  #     dockerfile: dockerfile.prod
+  #   ports:
+  #     - "4000:4000"
+  #   environment:
+  #     - PORT=4000
+  #     - NATS_SERVERS=nats://nats-servers:4222
+  #   depends_on:
+  #     - nats-servers
+  #   restart: unless-stopped
+  #   networks:
+  #     - laucher-app-dev
 
   auth-db:
     image: postgres:15-alpine
@@ -65,20 +65,20 @@ services:
     networks:
       - laucher-app-dev
 
-  products-ms:
-    image: products-ms
-    build:
-      context: ./microservices/products-ms
-      dockerfile: dockerfile.prod
-    environment:
-      - PORT=3001
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_PRODUCTS_ENV}@product-db:5432/${POSTGRES_DB_PRODUCTS_ENV}?schema=public&sslmode=disable
-      - NATS_SERVERS=nats://nats-servers:4222
-    depends_on:
-      - product-db
-    restart: unless-stopped
-    networks:
-      - laucher-app-dev
+  # products-ms:
+  #   image: products-ms
+  #   build:
+  #     context: ./microservices/products-ms
+  #     dockerfile: dockerfile.prod
+  #   environment:
+  #     - PORT=3001
+  #     - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_PRODUCTS_ENV}@product-db:5432/${POSTGRES_DB_PRODUCTS_ENV}?schema=public&sslmode=disable
+  #     - NATS_SERVERS=nats://nats-servers:4222
+  #   depends_on:
+  #     - product-db
+  #   restart: unless-stopped
+  #   networks:
+  #     - laucher-app-dev
 
   contacts-db:
     image: postgres:15-alpine
@@ -149,20 +149,20 @@ services:
     networks:
       - laucher-app-dev
 
-  branches-ms:
-    image: branches-ms
-    build:
-      context: ./microservices/branches-ms
-      dockerfile: dockerfile.prod
-    environment:
-      - PORT=3003
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_BRANCHES_ENV}@branches-db:5432/${POSTGRES_DB_BRANCHES_ENV}?schema=public&sslmode=disable
-      - NATS_SERVERS=nats://nats-servers:4222
-    depends_on:
-      - branches-db
-    restart: unless-stopped
-    networks:
-      - laucher-app-dev
+  # branches-ms:
+  #   image: branches-ms
+  #   build:
+  #     context: ./microservices/branches-ms
+  #     dockerfile: dockerfile.prod
+  #   environment:
+  #     - PORT=3003
+  #     - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD_BRANCHES_ENV}@branches-db:5432/${POSTGRES_DB_BRANCHES_ENV}?schema=public&sslmode=disable
+  #     - NATS_SERVERS=nats://nats-servers:4222
+  #   depends_on:
+  #     - branches-db
+  #   restart: unless-stopped
+  #   networks:
+  #     - laucher-app-dev
 
   voucher-db:
     image: postgres:15-alpine
