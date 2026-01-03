@@ -20,8 +20,8 @@ services:
 
   auth-db:
     image: postgres:15-alpine
-    # ports:
-    #   - "5433:5432"
+    ports:
+      - "5433:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_AUTH_ENV}
       - POSTGRES_DB=${POSTGRES_DB_AUTH_ENV}
@@ -33,8 +33,8 @@ services:
 
   boxdaily-db:
     image: postgres:15-alpine
-    # ports:
-    #   - "5442:5432"
+    ports:
+      - "5442:5432"
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_BOXDAILY_ENV}
       - POSTGRES_DB=${POSTGRES_DB_BOXDAILY_ENV}
@@ -99,8 +99,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_CONTACTS_ENV}
       - POSTGRES_DB=${POSTGRES_DB_CONTACTS_ENV}
-    # ports:
-    #   - "5435:5432"
+    ports:
+      - "5435:5432"
     volumes:
       - contacts-db-data:/var/lib/postgresql/data
     restart: always
